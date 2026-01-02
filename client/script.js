@@ -148,18 +148,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Timer logic to clear chat after 12 minutes of inactivity
+    // Timer logic to clear chat after 5 minutes of inactivity
     let chatClearTimer;
     function resetChatClearTimer() {
         if (chatClearTimer) clearTimeout(chatClearTimer);
         chatClearTimer = setTimeout(() => {
             clearChatHistory();
-        }, 12 * 60 * 1000); // 12 minutes in milliseconds
+        }, 5 * 60 * 1000); // 5 minutes in milliseconds
     }
 
     function clearChatHistory() {
         chatMessages.innerHTML = '';
-        addBotMessage("Riwayat percakapan telah dibersihkan otomatis (12 menit). Ada lagi yang bisa saya bantu?");
+        addBotMessage("Riwayat percakapan telah dibersihkan otomatis (5 menit). Ada lagi yang bisa saya bantu?");
     }
 
     function addUserMessage(text) {
