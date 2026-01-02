@@ -184,6 +184,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function findLocalMeaning(keyword) {
         keyword = keyword.toLowerCase().trim();
+
+        // Cek pertanyaan tentang identitas
+        if (keyword.includes("siapa kamu") || keyword.includes("siapa anda") || (keyword.includes("siapa") && keyword.includes("kamu"))) {
+            return "aku MNH, ini adalah tugas UAS bahasa Indonesia dan aku siap menjawab seluruh pertanyaan anda";
+        }
         
         // Pembersihan input dari kata tanya umum (natural language processing sederhana)
         const stopWords = ["apa", "itu", "arti", "adalah", "maksud", "dari", "kata", "dong", "sih", "tahu", "kasih", "berikan"];
