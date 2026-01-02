@@ -1,0 +1,182 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // === 1. Load Data ===
+    const data = window.dictionaryData;
+    const tableBody = document.getElementById('table-body');
+    const searchInput = document.getElementById('search-input');
+    
+    // Function to render table
+    function renderTable(items) {
+        tableBody.innerHTML = '';
+        if (items.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Kata tidak ditemukan</td></tr>';
+            return;
+        }
+        
+        items.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="gaul-word">${item.word}</td>
+                <td>${item.meaning}</td>
+                <td><em>"${item.sentence}"</em></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Initial render
+    renderTable(data);
+
+    // === 2. Search Feature ===
+    searchInput.addEventListener('input', (e) => {
+        const keyword = e.target.value.toLowerCase();
+        const filtered = data.filter(item => 
+            item.word.toLowerCase().includes(keyword) || 
+            item.meaning.toLowerCase().includes(keyword)
+        );
+        renderTable(filtered);
+    });
+
+    // === 3. Chatbot Logic ===
+    const chatTrigger = document.getElementById('chatbot-trigger');
+    const chatContainer = document.getElementById('chatbot-container');
+    const chatClose = document.getElementById('chat-close');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send');
+    const chatMessages = document.getElementById('chat-messages');
+
+    // Toggle Chat
+    chatTrigger.addEventListener('click', () => {
+        chatContainer.classList.add('active');
+        if (chatMessages.children.length === 0) {
+            addBotMessage("Halo! Saya KamusBot. Tanya arti kata gaul di sini!");
+        }
+    });
+
+    chatClose.addEventListener('click', () => {
+        chatContainer.classList.remove('active');
+    });
+
+    // Send Message
+    function sendMessage() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        addUserMessage(text);
+        chatInput.value = '';
+
+        // Process bot response
+        setTimeout(() => {
+            const response = findMeaning(text);
+            addBotMessage(response);
+        }, 500);
+    }
+
+    chatSend.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    function addUserMessage(text) {
+        const div = document.createElement('div');
+        div.className = 'message user-message';
+        div.textContent = text;
+        chatMessages.appendChild(div);
+        scrollToBottom();
+    }
+
+    function addBotMessage(text) {
+        const div = document.createElement('div');
+        div.className = 'message bot-message';
+        div.textContent = text;
+        chatMessages.appendChild(div);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function findMeaning(keyword) {
+        keyword = keyword.toLowerCase();
+        
+        // Cek match persis
+        const exactMatch = data.find(item => item.word.toLowerCase() === keyword);
+        if (exactMatch) {
+            return `${exactMatch.word} artinya: ${exactMatch.meaning}. Contoh: "${exactMatch.sentence}"`;
+        }
+
+        // Cek partial match
+        const partialMatch = data.find(item => item.word.toLowerCase().includes(keyword));
+        if (partialMatch) {
+            return `Mungkin maksudmu "${partialMatch.word}"? Artinya: ${partialMatch.meaning}.`;
+        }
+
+        return "Maaf, kata tersebut belum ada di kamus saya. Coba kata lain ya!";
+    }
+
+    // === 4. Canvas Animation (Bubble Background) ===
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let bubbles = [];
+
+    function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    }
+
+    class Bubble {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height + height; // Start from bottom or random
+            this.radius = Math.random() * 20 + 5;
+            this.speed = Math.random() * 1 + 0.5;
+            this.opacity = Math.random() * 0.5 + 0.1;
+        }
+
+        update() {
+            this.y -= this.speed;
+            if (this.y + this.radius < 0) {
+                this.y = height + this.radius;
+                this.x = Math.random() * width;
+            }
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+            ctx.fill();
+            ctx.closePath();
+        }
+    }
+
+    function initBubbles() {
+        bubbles = [];
+        const count = Math.floor(width / 20); // Responsive count
+        for (let i = 0; i < count; i++) {
+            bubbles.push(new Bubble());
+            // Randomize initial Y so they don't all start at bottom
+            bubbles[i].y = Math.random() * height; 
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        bubbles.forEach(bubble => {
+            bubble.update();
+            bubble.draw();
+        });
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', () => {
+        resize();
+        initBubbles();
+    });
+
+    resize();
+    initBubbles();
+    animate();
+});
