@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatTrigger.addEventListener('click', () => {
         chatContainer.classList.add('active');
         if (chatMessages.children.length === 0) {
-            addBotMessage("Halo! Saya KamusBot. Tanya arti kata gaul di sini!");
+            addBotMessage("Halo! Saya CHAT AI. Tanya arti kata gaul di sini!");
         }
     });
 
