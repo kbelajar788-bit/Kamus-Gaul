@@ -114,21 +114,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function findMeaning(keyword) {
-        keyword = keyword.toLowerCase();
+        keyword = keyword.toLowerCase().trim();
         
-        // Cek match persis
-        const exactMatch = data.find(item => item.word.toLowerCase() === keyword);
-        if (exactMatch) {
-            return `${exactMatch.word} artinya: ${exactMatch.meaning}. Contoh: "${exactMatch.sentence}"`;
+        // Pembersihan input dari kata tanya umum (natural language processing sederhana)
+        const stopWords = ["apa", "itu", "arti", "adalah", "maksud", "dari", "kata", "dong", "sih", "tahu", "kasih", "berikan"];
+        let cleanKeyword = keyword;
+        
+        stopWords.forEach(word => {
+            const regex = new RegExp(`\\b${word}\\b`, 'gi');
+            cleanKeyword = cleanKeyword.replace(regex, '');
+        });
+        
+        cleanKeyword = cleanKeyword.replace(/[?!.]/g, '').trim();
+
+        // Cari di data kamus
+        const match = data.find(item => 
+            item.word.toLowerCase() === cleanKeyword ||
+            keyword.includes(item.word.toLowerCase())
+        );
+
+        if (match) {
+            return `${match.word} artinya: ${match.meaning}. Contoh: "${match.sentence}"`;
         }
 
-        // Cek partial match
-        const partialMatch = data.find(item => item.word.toLowerCase().includes(keyword));
-        if (partialMatch) {
-            return `Mungkin maksudmu "${partialMatch.word}"? Artinya: ${partialMatch.meaning}.`;
+        // Cek jika user menanyakan kata kunci yang ada di tengah kalimat
+        for (const item of data) {
+            if (keyword.includes(item.word.toLowerCase())) {
+                return `${item.word} artinya: ${item.meaning}. Contoh: "${item.sentence}"`;
+            }
         }
 
-        return "Maaf, kata tersebut belum ada di kamus saya. Coba kata lain ya!";
+        return "Maaf, saya tidak mengerti kata tersebut. Coba tanyakan arti kata gaul lainnya ya, misalnya: 'Apa arti gabut?'";
     }
 
     // === 4. Canvas Animation (Bubble Background) ===
