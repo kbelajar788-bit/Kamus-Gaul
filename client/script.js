@@ -64,11 +64,28 @@ document.addEventListener('DOMContentLoaded', () => {
         addUserMessage(text);
         chatInput.value = '';
 
+        // Set or reset clear timer (12 minutes)
+        resetChatClearTimer();
+
         // Process bot response
         setTimeout(() => {
             const response = findMeaning(text);
             addBotMessage(response);
         }, 500);
+    }
+
+    // Timer logic to clear chat after 12 minutes of inactivity
+    let chatClearTimer;
+    function resetChatClearTimer() {
+        if (chatClearTimer) clearTimeout(chatClearTimer);
+        chatClearTimer = setTimeout(() => {
+            clearChatHistory();
+        }, 12 * 60 * 1000); // 12 minutes in milliseconds
+    }
+
+    function clearChatHistory() {
+        chatMessages.innerHTML = '';
+        addBotMessage("Riwayat percakapan telah dibersihkan otomatis (12 menit). Ada lagi yang bisa saya bantu?");
     }
 
     chatSend.addEventListener('click', sendMessage);
