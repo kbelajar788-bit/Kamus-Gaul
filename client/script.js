@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatTrigger.addEventListener('click', () => {
         chatContainer.classList.add('active');
         if (chatMessages.children.length === 0) {
-            addBotMessage("Halo! Saya CHAT AI. Tanya arti kata gaul di sini!");
+            addBotMessage("hai saya MNH ini adalah tugas UAS bahasa Indonesia yg saya kerjakan dan saya akan menjawab pertanyaan anda");
         }
     });
 
